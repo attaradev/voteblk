@@ -48,8 +48,10 @@ contract Voting {
         emit CandidateAdded(lastCandidateId, _name);
     }
 
-    function removeCandidate(uint16 _id) public {
-        delete candidates[_id];
+    function removeCandidate(
+        uint16 _candidateId
+    ) public validCandidate(_candidateId) {
+        delete candidates[_candidateId];
     }
 
     function getAllCandidates() public view returns (Candidate[] memory) {
