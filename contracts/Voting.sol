@@ -37,8 +37,8 @@ contract Voting {
         _;
     }
 
-    mapping(address => bool) public voters;
-    mapping(uint => Candidate) public candidates;
+    mapping(address => bool) voters;
+    mapping(uint => Candidate) candidates;
     uint16 lastCandidateId;
 
     function addCandidate(string memory _name) public nameIsNotEmpty(_name) {
