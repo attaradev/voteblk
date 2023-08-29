@@ -85,6 +85,12 @@ contract Voting {
         return winner;
     }
 
+    function getCandidate(
+        uint16 _candidateId
+    ) public view returns (Candidate memory) {
+        return candidates[_candidateId];
+    }
+
     function candidatesCount() public view returns (uint16) {
         uint16 count = 0;
 
