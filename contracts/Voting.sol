@@ -22,9 +22,11 @@ contract Voting {
         _;
     }
 
-    modifier validCandidate(uint _candidateId) {
+    modifier validCandidate(uint16 _canditateId) {
         require(
-            _candidateId > 0 && _candidateId <= candidatesCount,
+            _canditateId > 0 &&
+                _canditateId <= lastCandidateId &&
+                candidates[_canditateId].id != 0,
             "Invalid candidate"
         );
         _;
@@ -37,13 +39,13 @@ contract Voting {
 
     mapping(address => bool) public voters;
     mapping(uint => Candidate) public candidates;
-    uint public candidatesCount;
+    uint16 lastCandidateId;
 
     function addCandidate(string memory _name) public nameIsNotEmpty(_name) {
-        candidatesCount++;
-        candidates[candidatesCount] = Candidate(candidatesCount, _name, 0);
+        lastCandidateId++;
+        candidates[lastCandidateId] = Candidate(lastCandidateId, _name, 0);
 
-        emit CandidateAdded(candidatesCount, _name);
+        emit CandidateAdded(lastCandidateId, _name);
     }
 
     function removeCandidate(uint _id) public {
@@ -51,9 +53,9 @@ contract Voting {
     }
 
     function getAllCandidates() public view returns (Candidate[] memory) {
-        Candidate[] memory _candidates = new Candidate[](candidatesCount);
+        Candidate[] memory _candidates = new Candidate[](lastCandidateId);
 
-        for (uint i = 1; i <= candidatesCount; i++) {
+        for (uint i = 1; i <= lastCandidateId; i++) {
             _candidates[i - 1] = candidates[i];
         }
 
@@ -61,7 +63,7 @@ contract Voting {
     }
 
     function castVote(
-        uint _candidateId
+        uint16 _candidateId
     ) public validCandidate(_candidateId) voteOnlyOnce {
         voters[msg.sender] = true;
         candidates[_candidateId].voteCount++;
@@ -72,12 +74,24 @@ contract Voting {
     function getWinner() public view returns (Candidate memory) {
         Candidate memory winner = candidates[1];
 
-        for (uint i = 2; i <= candidatesCount; i++) {
+        for (uint i = 2; i <= lastCandidateId; i++) {
             if (candidates[i].voteCount > winner.voteCount) {
                 winner = candidates[i];
             }
         }
 
         return winner;
+    }
+
+    function candidatesCount() public view returns (uint16) {
+        uint16 count = 0;
+
+        for (uint i = 1; i <= lastCandidateId; i++) {
+            if (candidates[i].id != 0) {
+                count++;
+            }
+        }
+
+        return count;
     }
 }
