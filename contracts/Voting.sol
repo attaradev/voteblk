@@ -6,16 +6,16 @@ pragma solidity ^0.8.9;
 
 contract Voting {
     struct Candidate {
-        uint id;
+        uint16 id;
         string name;
         uint voteCount;
     }
 
-    event CandidateAdded(uint id, string name);
+    event CandidateAdded(uint16 id, string name);
 
-    event CandidateRemoved(uint id);
+    event CandidateRemoved(uint16 id);
 
-    event Voted(address voter, uint candidateId);
+    event Voted(address voter, uint16 candidateId);
 
     modifier nameIsNotEmpty(string memory _name) {
         require(bytes(_name).length > 0, "Name cannot be empty");
@@ -48,14 +48,14 @@ contract Voting {
         emit CandidateAdded(lastCandidateId, _name);
     }
 
-    function removeCandidate(uint _id) public {
+    function removeCandidate(uint16 _id) public {
         delete candidates[_id];
     }
 
     function getAllCandidates() public view returns (Candidate[] memory) {
         Candidate[] memory _candidates = new Candidate[](lastCandidateId);
 
-        for (uint i = 1; i <= lastCandidateId; i++) {
+        for (uint16 i = 1; i <= lastCandidateId; i++) {
             _candidates[i - 1] = candidates[i];
         }
 
@@ -74,7 +74,7 @@ contract Voting {
     function getWinner() public view returns (Candidate memory) {
         Candidate memory winner = candidates[1];
 
-        for (uint i = 2; i <= lastCandidateId; i++) {
+        for (uint16 i = 2; i <= lastCandidateId; i++) {
             if (candidates[i].voteCount > winner.voteCount) {
                 winner = candidates[i];
             }
